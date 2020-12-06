@@ -1,0 +1,30 @@
+<script>
+  var theme = {};
+  theme.classes = {};
+  theme.partials = {};
+  theme.settings = {};
+  theme.shop = {};
+  theme.swatches = {};
+  theme.translations = {};
+  theme.utils = {};
+  theme.urls = {};
+
+  theme.shop.money_format = {{ shop.money_format | json }};
+  theme.settings.cart_type = '{{ settings.cart--type }}';
+  theme.translations.mailing_list_success_message = '{{ "general.mailing_list.success_message" | t }}';
+  theme.translations.mailing_list_email_blank = '{{ "general.mailing_list.email_blank" | t }}';
+  theme.urls.cart = '{{ routes.cart_url }}';
+  theme.urls.product_recommendations = '{{ routes.product_recommendations_url }}';
+  theme.urls.search = '{{ routes.search_url }}';
+  theme.product_modal = {};
+  theme.quick_add_products = {};
+  theme.map = {};
+
+  {% render 'framework--swatch-colors' %}
+
+  // LazySizes
+  window.lazySizesConfig = window.lazySizesConfig || {};
+  window.lazySizesConfig.expand = 1200;
+  window.lazySizesConfig.loadMode = 3;
+  window.lazySizesConfig.ricTimeout = 50;
+</script>

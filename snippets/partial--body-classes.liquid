@@ -1,0 +1,23 @@
+{%- capture body_classes -%}
+  template--{{ template | split: '.' | first | remove: '_' | replace: '/', '--' }}
+  page--{{ page_title | handle }}
+  {% if customer %} customer-logged-in{% endif %}
+  {% if settings.layout--show-page-border %} show-border{% endif %}
+  {% if settings.layout--show-page-border and
+        settings.bdr-color--page == settings.bg-color--announcement %}
+        announcement--adjust-padding{% endif %}
+  {% if settings.bg-color--body == settings.color--button %} colors--body-n-button-match{% endif %}
+  {% if settings.bg-color--body == settings.bg-color--panel %} colors--body-n-panel-match{% endif %}
+{%- endcapture -%}
+
+{%- assign classes = body_classes | strip_newlines | split: ' ' -%}
+{%- assign class_list = '' -%}
+
+{%- for class in classes -%}
+  {%- if class != ' ' -%}
+    {%- assign class_list = class_list | append: class | append: " " -%}
+  {%- endif -%}
+{%- endfor -%}
+{%- assign class_list = class_list | strip -%}
+
+{{ class_list }}

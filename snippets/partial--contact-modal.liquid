@@ -1,0 +1,189 @@
+{% assign facebook_url = settings.social--facebook--url %}
+{% assign twitter_url = settings.social--twitter--url %}
+{% assign pinterest_url = settings.social--pinterest--url %}
+{% assign instagram_url = settings.social--instagram--url %}
+{% assign vimeo_url = settings.social--vimeo--url %}
+{% assign youtube_url = settings.social--youtube--url %}
+
+{% if
+  facebook_url.size > 0 or
+  twitter_url.size > 0 or
+  pinterest_url.size > 0 or
+  instagram_url.size > 0 or
+  vimeo_url.size > 0 or
+  youtube_url.size > 0
+%}
+  {% assign show_social = true %}
+{% endif %}
+
+<div class="contact-modal">
+
+  {% if contact_type == 'modal' and view == 'mobile-nav' %}
+    <span class="mobile-nav--contact-modal-trigger">
+      <a class="contact-modal--button font--secondary-button" href="#">
+        {{ contact_text | escape }}
+      </a>
+    </span>
+  {% elsif contact_type == 'link' %}
+    <a
+      class="contact-modal--button font--secondary-button"
+      href="{{ contact_url }}"
+    >
+      {{ contact_text | escape }}
+    </a>
+  {% elsif contact_type == 'modal' %}
+
+    <div
+      class="modal"
+      data-js-class="FrameworkModal"
+      data-modal--fullscreen="true"
+      data-modal--view="contact-modal"
+    >
+      <div class="modal--link">
+        <a
+          class="contact-modal--button font--secondary-button"
+          href="{{ store.url}}/pages/contact"
+        >
+          {{ contact_text | escape }}
+        </a>
+      </div>
+
+      <div class="modal--content">
+        <div class="contact-modal--content">
+          <div class="contact-modal--wrapper">
+            <div class="contact-modal--header">
+              {% if settings.contact-modal--alternative-text and inverted_logo %}
+                {%
+                  render 'framework--logo',
+                  image_type: 'inverted',
+                  logo: logo,
+                  inverted_logo: inverted_logo,
+                  height_range: height_range
+                %}
+              {% else %}
+                {%
+                  render 'framework--logo',
+                  logo: logo,
+                  inverted_logo: inverted_logo,
+                  height_range: height_range
+                %}
+              {% endif %}
+            </div>
+
+            {% unless store_address == blank and store_hours == blank %}
+              <div class="contact-modal--left-column">
+                {% unless store_address == blank %}
+                  <div class="contact-modal--address">
+                    <div class="contact-modal--address-text font--paragraph">
+                      {{ store_address | newline_to_br }}
+                    </div>
+                    {% assign block_link_class = "font--block-link" %}
+                    {% if settings.contact-modal--alternative-text %}
+                      {% assign block_link_class = "font--block-link--inverted" %}
+                    {% endif %}
+
+                    <div class="contact-modal--address-link {{ block_link_class }}">
+                      <a
+                        href="https://www.google.ca/maps/place/{{ store_address | url_encode }}"
+                        target="_blank"
+                        rel="noreferrer"
+                      >
+                        {{ 'home.map.open_in_maps' | t }}
+                      </a>
+                    </div>
+                  </div>
+                {% endunless %}
+
+                {% unless store_hours == blank %}
+                  <div class="contact-modal--hours">
+                    <div class="contact-modal--hours-text font--paragraph">
+                      {{ store_hours }}
+                    </div>
+                  </div>
+                {% endunless %}
+              </div>
+            {% endunless %}
+
+            <div class="contact-modal--right-column">
+              <div class="contact-modal--form">
+
+                <div class="contact-modal--form-error"></div>
+
+                <h3 class="contact-modal--form-title font--block-heading">
+                  {{ 'layout.header.contact-us' | t }}
+                </h3>
+
+                {% form 'contact', id: 'contact_form_modal' %}
+
+                  <p>
+                    <input
+                      class="styled-input{% if form.errors contains 'name' %} error{% endif %}"
+                      type="text"
+                      name="contact[name]"
+                      value="{{ contact.fields.name }}"
+                      aria-label="{{ 'contact_page.name' | t }}"
+                      placeholder="{{ 'contact_page.name' | t }}"
+                    />
+                  </p>
+                  <p>
+                    <input
+                      class="styled-input{% if form.errors contains 'email' %} error{% endif %}"
+                      type="email"
+                      name="contact[email]"
+                      value="{{ contact.fields.email }}"
+                      aria-label="{{ 'contact_page.email' | t }}"
+                      placeholder="{{ 'contact_page.email' | t }}"
+                      required
+                    />
+                  </p>
+                  <p>
+                    <textarea
+                      class="styled-input{% if form.errors contains 'body' %} error{% endif %}"
+                      aria-label="{{ 'contact_page.message' | t }}"
+                      rows="10"
+                      cols="60"
+                      name="contact[body]"
+                      placeholder="{{ 'contact_page.message' | t }}"
+                      required
+                    >{{ contact.fields.body }}</textarea>
+                  </p>
+                  <p>
+                    {% if settings.contact-modal--alternative-text %}
+                      <input
+                        class="font--secondary-button--inverted"
+                        type="submit"
+                        value="{{ 'contact_page.button' | t }}"
+                      />
+                    {% else %}
+                      <input
+                        class="font--button"
+                        type="submit"
+                        value="{{ 'contact_page.button' | t }}"
+                      />
+                    {% endif %}
+                  </p>
+
+                  {% if form.posted_successfully? or form.errors %}
+                    <script>
+                      window.location.hash = '#feedback-bar--contact-modal';
+                    </script>
+                  {% endif %}
+
+                {% endform %}
+
+              </div>
+
+              {% if show_social %}
+                <div class="contact-modal--social">
+                  <h3 class="contact-modal--social-title">{{ 'layout.header.follow' | t }}</h3>
+                  {% render 'partial--social-media', position: 'modal' %}
+                </div>
+              {% endif %}
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  {% endif %}
+</div>

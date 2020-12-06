@@ -1,0 +1,28 @@
+<div
+  class="cart-link"
+  {% if cart.item_count > 0 %}
+    data-cart--has-items="true"
+  {% endif %}
+>
+  {% if settings.cart--type == 'drawer' %}
+    <div class="cart--open-right off-canvas--open" data-off-canvas--open="right-sidebar">
+  {% endif %}
+    <a
+      tabindex="0"
+      class="toggle {% if settings.cart--type == 'modal' %}modal--link{% endif %}"
+      href="{{ routes.cart_url }}"
+      aria-label="{{ 'layout.header.cart' | t }}"
+    >
+      {% if cart_icon == "bag" %}
+        {% render 'framework--icons', icon: 'bag' %}
+      {% else %}
+        {% render 'framework--icons', icon: 'cart' %}
+      {% endif %}
+      <span class="total cart--external--total-price money">{% if cart.item_count > 0 %}{{ cart.total_price | money }}{% endif %}</span>
+      <span class="count cart--external--total-items">{% if cart.item_count > 0 %}{{ cart.item_count }}{% endif %}</span>
+    </a>
+  {% if settings.cart--type == 'drawer' %}
+    </div>
+  {% endif %}
+
+</div>

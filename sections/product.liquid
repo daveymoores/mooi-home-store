@@ -1,0 +1,656 @@
+{% capture product_meta %}
+  	<meta itemprop="url" content="{{ shop.url }}{{ product.url }}" />
+  	<meta itemprop="name" content="{{ product.title }}" />
+{% endcapture %}
+
+	<script type="application/ld+json">
+    {
+      "@context": "https://schema.org/",
+      "@type": "Product",
+      "name": "{{ product.title }}",
+      "description": "{{ page_description }}",
+      "sku": "{{ product.selected_or_first_available_variant }}",
+      "mpn": "{{ product.id }}",
+      "brand": {
+        "@type": "Brand",
+        "name": "{{ shop.name }}",
+        "description": "{{ shop.description }}",
+        "url": "{{ shop.domain }}"
+      },
+      "offers": {
+        "@type": "Offer",
+        "url": "{{ canonical_url }}",
+        "priceCurrency": "{{ shop.currency }}",
+        "price": "{{ product.price | money_without_currency }}",
+        "itemCondition": "http://schema.org/NewCondition",
+        "availability": "{% if product.available == true %}
+  			https://schema.org/InStock
+		{% endif %}{% if product.available == false %}
+ 			https://schema.org/OutOfStock
+		{% endif %}"
+      }
+    }
+    </script>
+
+
+{% assign current_variant = product.selected_or_first_available_variant %}
+{% assign featured_media = current_variant.featured_media | default: product.featured_media %}
+{% assign description = product.description | strip_html %}
+{% assign paragraph_count = product.description | split: '<p>' %}
+{% assign show_excerpt = false %}
+
+{% assign variant_style = section.settings.variant-style %}
+{% assign swatches_enabled = section.settings.swatches-enabled %}
+{% assign color_t = 'products.color' | t %}
+
+{% assign loop_enabled = section.settings.loop--enabled %}
+{% assign youtube_exists = false %}
+{% assign load_3d = false %}
+
+{% if description.size > 200 or paragraph_count.size > 3 %}
+  {% assign show_excerpt = true %}
+  {% assign product_excerpt = product.metafields.global.description_tag %}
+  {% if product_excerpt == blank %}
+    {% assign product_excerpt = product.description | strip_html | truncate: 100 %}
+  {% endif %}
+{% endif %}
+
+{% capture price_meta %}
+  <meta itemprop="priceCurrency" content="{{ cart.currency.iso_code }}" />
+  {% if product.available %}
+    <link itemprop="availability" href="https://schema.org/InStock" />
+  {% else %}
+    <link itemprop="availability" href="https://schema.org/OutOfStock" />
+  {% endif %}
+  {% assign price_meta = current_variant.price | divided_by: 100.00 %}
+  <meta itemprop="price" content="{{ price_meta }}">
+{% endcapture %}
+
+{% capture thumbnail_images %}
+  {% for media in product.media %}
+
+    {% assign active = false %}
+    {% if media.id == featured_media.id %}
+      {% assign active = true %}
+    {% endif %}
+
+    <div
+      class="product-page--thumb"
+      tabindex="0"
+      data-id="{{ media.id }}"
+      data-active="{{ active }}"
+    >
+      {%
+        render 'framework--image',
+        image: media.preview_image,
+        widths: '90, 180'
+      %}
+
+      {% if media.media_type == "model" %}
+        {% render 'framework--icons', icon: '3d-badge' %}
+      {% elsif media.media_type == "video" %}
+        {% render 'framework--icons', icon: 'play-badge' %}
+      {% elsif media.media_type == "external_video" %}
+        {% render 'framework--icons', icon: 'play-badge' %}
+      {% endif %}
+    </div>
+
+  {% endfor %}
+{% endcapture %}
+
+{% capture product_media %}
+  {% for media in product.media %}
+    {% if section.settings.modal--enable and media.media_type == 'image' %}
+      <a href="#" class="modal--link" aria-label="{{ 'products.image_modal' | t }}">
+    {% endif %}
+
+    <div
+      class="a11y--focus-trigger"
+      data-mq="medium-large"
+      data-forward-to=".product-page--thumbs, .product-page--thumbs--mq-medium"
+      data-back-to=".product-page--thumb[data-active='true']"
+    ></div>
+
+    {% assign active = false %}
+    {% if media.id == featured_media.id %}
+      {% assign active = true %}
+    {% endif %}
+
+    <div
+      class="product-page--media"
+      data-id="{{ media.id }}"
+      data-media-type="{{ media.media_type }}"
+      data-active="{{ active }}"
+    >
+
+      {% case media.media_type %}
+        {% when "image" %}
+          {%
+            render 'framework--image',
+            image: media,
+            max_height: 600
+          %}
+
+        {% when "video" %}
+          <div
+            class="product-video--root"
+            tabindex="0"
+            data-js-class="ProductVideo"
+            data-loop-enabled="{{ loop_enabled }}"
+            data-view="desktop"
+            data-type="plyr"
+          >
+            <div
+              class="product-video--container"
+              style="padding-top: {{ 1 | divided_by: media.aspect_ratio | times: 100 }}%;"
+            >
+              {{ media | video_tag: image_size: "1024x" }}
+            </div>
+          </div>
+
+        {% when "external_video" %}
+          <div
+            class="product-video--root"
+            tabindex="0"
+            data-js-class="ProductVideo"
+            data-loop-enabled="{{ loop_enabled }}"
+            data-view="desktop"
+            data-type="youtube"
+            data-video-id="{{ media.external_id }}"
+          >
+            <div
+              class="product-video--container"
+              style="padding-top: {{ 1 | divided_by: media.aspect_ratio | times: 100 }}%;"
+            >
+              <div class="product-video" id="desktop-{{ media.id }}"></div>
+            </div>
+          </div>
+
+        {% when "model" %}
+          <div
+            class="product-model--root"
+            tabindex="0"
+            data-js-class="ProductModel"
+            data-view="desktop"
+            style="padding-top:
+              {{- 1 | divided_by: media.preview_image.aspect_ratio | times: 100 -}}%;"
+          >
+            {{
+              media | model_viewer_tag: reveal: 'interaction',
+              toggleable: true,
+              image_size: "1024x"
+            }}
+          </div>
+
+        {% else %}
+          {{ media | media_tag }}
+
+      {% endcase %}
+
+    </div>
+
+    <div
+      class="a11y--focus-trigger"
+      data-mq="medium-large"
+      data-forward-to=".product-page--thumb[data-active='true']"
+      data-back-to=".product-page--info-box"
+    ></div>
+
+    {% if section.settings.modal--enable and media.media_type == 'image' %}
+      </a>
+    {% endif %}
+  {% endfor %}
+{% endcapture %}
+
+{% comment %} View {% endcomment %}
+<div
+  class="product-page--root"
+  data-js-class="ProductPage"
+  data-section-id="{{ section.id }}"
+  data-section-type="product_page"
+  data-modal-enable="{{ section.settings.modal--enable }}"
+  data-show-thumbs-bottom="{% if product.media.size > 4 %}true{% else %}false{% endif %}"
+>
+  <div class="product-page--main" itemscope itemtype="https://schema.org/Product">
+    {{ product_meta }}
+    <div class="product-page--main-container">
+      <div class="product-page--info-box">
+        <div class="product-page--info-box--container">
+          <div
+            class="product-page--close-description"
+            aria-label="{{ 'products.details_panel.close' | t }}"
+          >
+            {% render 'framework--icons', icon: 'cross' %}
+          </div>
+
+          <h2 class="product-page--title font--section-heading">{{ product.title }}</h2>
+          
+          <!-- RYVIU APP :: WIDGET-TOTAL -->
+          <div class="review-widget">
+            <ryviu-widget-total
+                reviews_data="{{product.metafields.ryviu.product_reviews_info  | escape  }}" 
+                product_id="{{product.id}}" handle="{{product.handle}}">
+            </ryviu-widget-total>
+          </div>
+          <!-- / RYVIU APP -->
+
+          {% if section.settings.vendor-name--show %}
+            <div class="product-page--vendor font--accent">
+              <a href="{{ product.vendor | url_for_vendor }}">{{ product.vendor }}</a>
+            </div>
+          {% endif %}
+
+          <div class="product-page--slider">
+            <div
+              class="fw--slider"
+              data-js-class="FrameworkSlider"
+              data-navigation="true"
+              data-pagination="false"
+              data-pagination-numbers="false"
+            >
+              {% for media in product.media %}
+                <div class="product-page--slider-media" data-id="{{ media.id }}">
+                  {% case media.media_type %}
+                    {% when "image" %}
+                      {% render "framework--image", image: media %}
+
+                    {% when "video" %}
+                      <div
+                        class="product-video--root"
+                        data-js-class="ProductVideo"
+                        data-loop-enabled="{{ loop_enabled }}"
+                        data-view="mobile"
+                        data-type="plyr"
+                      >
+                        <div
+                          class="product-video--container"
+                          style="padding-top:
+                            {{- 1 | divided_by: media.aspect_ratio | times: 100 -}}%;"
+                        >
+                          {{ media | video_tag: image_size: "1024x" }}
+                        </div>
+                      </div>
+
+                    {% when "external_video" %}
+                      {% assign youtube_exists = true %}
+                      <div
+                        class="product-video--root"
+                        tabindex="0"
+                        data-js-class="ProductVideo"
+                        data-loop-enabled="{{ loop_enabled }}"
+                        data-view="mobile"
+                        data-type="youtube"
+                        data-video-id="{{ media.external_id }}"
+                      >
+                        <div
+                          class="product-video--container"
+                          style="padding-top:
+                            {{- 1 | divided_by: media.aspect_ratio | times: 100 -}}%;"
+                        >
+                          <div class="product-video" id="mobile-{{ media.id }}"></div>
+                        </div>
+                      </div>
+
+                    {% when "model" %}
+                      {% assign load_3d = true %}
+                      <div
+                        class="product-model--root"
+                        data-js-class="ProductModel"
+                        data-view="mobile"
+                        style="padding-top:
+                          {{- 1 | divided_by: media.preview_image.aspect_ratio | times: 100 -}}%;"
+                      >
+                        {{
+                          media | model_viewer_tag: reveal: 'interaction',
+                          toggleable: true,
+                          image_size: "1024x"
+                        }}
+                      </div>
+
+                    {% else %}
+                      {{ media | media_tag }}
+
+                  {% endcase %}
+                </div>
+              {% endfor %}
+            </div>
+          </div>
+
+          {% if load_3d %}
+            {% assign first_3d_model = product.media | where: "media_type", "model" | first %}
+
+            <div class="product-page--button-container">
+              <button
+                class="font--button"
+                data-shopify-xr
+                data-shopify-model3d-id="{{ first_3d_model.id }}"
+                data-shopify-title={{ product.title }}
+                style="display: none;"
+              >
+                {% render 'framework--icons', icon: '3d-badge' %}
+                {{ 'products.view_ar' | t }}
+              </button>
+            </div>
+          {% endif %}
+
+          {% unless product.description == blank %}
+            <div class="product-page--excerpt font--paragraph">
+              {% if show_excerpt %}
+                {{ product_excerpt }}
+              {% else %}
+                {{ product.description }}
+              {% endif %}
+            </div>
+          {% endunless %}
+
+          {% if show_excerpt %}
+            <div
+              class="product-page--description-toggle"
+              aria-label="{{ 'products.details_panel.toggle' | t }}"
+            >
+              <div class="product-page--more-details font--block-link">
+                <a role="button" tabindex="0">
+                  {{ 'products.details_panel.more' | t }}
+                </a>
+              </div>
+
+              <div class="product-page--less-details font--block-link">
+                <a role="button" tabindex="0">
+                  {{ 'products.details_panel.less' | t }}
+                </a>
+              </div>
+            </div>
+          {% endif %}
+
+          <div class="product-page--cart-form">
+            {% form 'product', product %}
+              <input type="hidden" name="quantity" value="1">
+
+                <div class="product-page--variants">
+                  {% unless product.has_only_default_variant %}
+
+                    {% for option in product.options_with_values %}
+                      {% assign option_name = option.name | trim | downcase %}
+
+                      {% if swatches_enabled and option_name == color_t %}
+                        {%
+                          render 'framework--radios',
+                          option: option,
+                          id: product.id,
+                          is_swatches: true
+                        %}
+                      {% elsif variant_style == 'dropdowns' %}
+                        {%
+                          render 'framework--disclosure',
+                          display_label: true
+                          label_name: option_name,
+                          option_names: option.values,
+                          current_value: option.selected_value,
+                          id: product.id
+                        %}
+                      {% else %}
+                        {%
+                          render 'framework--radios',
+                          option: option,
+                          id: product.id
+                        %}
+                      {% endif %}
+
+                    {% endfor %}
+
+                  {% endunless %}
+
+                  <select class="product-page--variant-select" name="id">
+                    {% for variant in product.variants %}
+                      <option
+                        value="{{ variant.id }}"
+                        data-sku="{{ variant.sku }}"
+                        {% if variant == current_variant %}
+                          selected
+                        {% endif%}
+                      >
+                        {{ variant.title }}
+                      </option>
+                    {% endfor %}
+                  </select>
+
+                  {% comment %} NOTE: uncomment below to add quantity field {% endcomment %}
+                  {% comment %}
+                  <div class="product-page--quantity">
+                    <label for="product-quantity">{{ 'products.quantity' | t }}</label>
+                    <input
+                      id="product-quantity"
+                      type="number"
+                      name="quantity"
+                      min="1"
+                      value="1"
+                      style="width: 60px"
+                    />
+                  </div>
+                  {% endcomment %}
+
+                </div>
+
+              <div class="product-page--price-n-button-wrapper">
+                {% if current_variant.price > 0 %}
+                  <div
+                    class="product-page--price-wrapper"
+                    itemprop="offers"
+                    itemscope
+                    itemtype="https://schema.org/Offer"
+                  >
+                    {{ price_meta }}
+
+                    <div class="product-page--price font--accent">
+                      {{ current_variant.price | money }}
+                    </div>
+
+                    <div class="product-page--compare-price font--light-accent">
+                      {% if current_variant.compare_at_price > current_variant.price %}
+                        {{ current_variant.compare_at_price | money }}
+                      {% endif %}
+                    </div>
+                  </div>
+                {% endif %}
+
+                <div class="product-page--sold-out">
+                  <div class="product-page--sold-out--variant">
+                    {{ 'products.sold_out.variant' | t }}
+                  </div>
+                  <div class="product-page--unavailable-variant">
+                    {{ 'products.unavailable_variant' | t }}
+                  </div>
+                  {% if product.available == false %}
+                    <div class="product-page--sold-out--product">
+                      {{ 'products.sold_out.product' | t }}
+                    </div>
+                  {% endif %}
+                </div>
+
+                {% assign cart_button_class = 'font--button' %}
+                {% if section.settings.smart_payment_button %}
+                  {% assign cart_button_class = 'font--secondary-button' %}
+                {% endif %}
+
+                <button
+                  class="product-page--add-to-cart {{ cart_button_class }}"
+                  onclick="pintrk('track', 'addtocart');"
+                  type="submit"
+                  name="add"
+                >
+                  <span class="text">{{ 'products.add_to_cart' | t }}</span>
+                  <span
+                    class="fw--loading_animation tiny"
+                    data-js-class="FrameworkLoadingAnimation"
+                  ></span>
+                </button>
+
+              </div>
+
+              {% if section.settings.smart_payment_button %}
+                <div class="product-page--smart-payment-buttons">
+                  {{ form | payment_button }}
+                </div>
+              {% endif %}
+            {% endform %}
+          </div>
+
+          <div class="product-page--description font--paragraph rte-content">
+            {{ product.description }}
+          </div>
+
+          {% if product.media.size > 1 %}
+            <div class="product-page--thumbs--mq-medium">
+              {{ thumbnail_images }}
+            </div>
+          {% endif %}
+          
+
+          {% if section.settings.share %}
+            <div class="product-page--social-media">
+              {% render 'partial--social-media', position: 'product' %}
+            </div>
+          {% endif %}
+
+        </div>
+      </div>
+
+      {% if product.media.size > 0 %}
+        <div class="product-page--modal">
+
+          <div class="modal" data-js-class="FrameworkModal">
+
+            <div class="product-page--media-container">
+              {{ product_media }}
+            </div>
+
+            <div class="product-page--modal-media">
+              {% for media in product.media %}
+                {% if media.media_type == "image" %}
+                  <div class="modal--content">
+                    {% render "framework--image", image: media %}
+                  </div>
+                {% endif %}
+              {% endfor %}
+            </div>
+          </div>
+
+        </div>
+
+        {% if product.media.size > 1 %}
+          <div class="product-page--thumbs">
+            {{ thumbnail_images }}
+          </div>
+        {% endif %}
+      {% endif %}
+    </div>
+
+
+  </div>
+
+
+
+</div>
+
+<script>
+  theme.product = {{ product | json }};
+
+  {% unless product.has_only_default_variant %}
+    var selectCallback = function(variant) {
+      theme.partials.ProductPage.variantSelected(variant);
+      // add your selectCallback code here...
+    };
+  {% endunless %}
+
+  {% if load_3d %}
+    // AR
+    window.ShopifyXR = window.ShopifyXR || function() {
+      (ShopifyXR.q = ShopifyXR.q || []).push(arguments)
+    }
+
+    {% assign models = product.media | where: 'media_type', 'model' | json %}
+
+    ShopifyXR('setModels', {{ models }});
+  {% endif %}
+
+  {% if youtube_exists %}
+    // YouTube callback
+    function onYouTubeIframeAPIReady() {
+      $(function() {
+        $(window).trigger('theme.utils.youtubeAPIReady');
+      });
+    }
+  {% endif %}
+</script>
+
+{% if load_3d %}
+  <script
+    defer
+    src="https://cdn.shopify.com/shopifycloud/shopify-xr-js/assets/v1.0/shopify-xr.en.js"
+  ></script>
+{% endif %}
+
+{% schema %}
+{
+  "name": "Product page",
+  "settings": [
+    {
+      "type": "select",
+      "id": "variant-style",
+      "label": "Product variant style",
+      "options": [
+        { "label": "Dropdowns", "value": "dropdowns" },
+        { "label": "Buttons", "value": "buttons" }
+      ],
+      "default": "dropdowns"
+    },
+    {
+      "type": "checkbox",
+      "id": "swatches-enabled",
+      "label": "Enable color swatches",
+      "default": false,
+      "info": "Automatically turn color options into swatches. [Learn more](https://support.troopthemes.com/guide/color-swatch-guide)"
+    },
+    {
+      "type": "checkbox",
+      "id": "smart_payment_button",
+      "label": "Show dynamic checkout button",
+      "info": "Lets customers check out directly using a familiar payment method. [Learn more](https://help.shopify.com/manual/using-themes/change-the-layout/dynamic-checkout)",
+      "default": true
+    },
+    {
+      "type": "checkbox",
+      "id": "vendor-name--show",
+      "label": "Show vendor name",
+      "default": false
+    },
+    {
+      "type": "checkbox",
+      "id": "share",
+      "label": "Enable social sharing",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Media"
+    },
+    {
+      "type": "paragraph",
+      "content": "Learn more about [media types](https://help.shopify.com/en/manual/products/product-media)."
+    },
+    {
+      "type": "checkbox",
+      "id": "modal--enable",
+      "label": "Enable image zoom",
+      "default": true,
+      "info": "Opens when clicking featured product image"
+    },
+    {
+      "type": "checkbox",
+      "id": "loop--enabled",
+      "label": "Enable video looping",
+      "default": false
+    }
+  ]
+}
+{% endschema %}

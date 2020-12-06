@@ -1,0 +1,14 @@
+{% assign account_t = 'layout.header.account_view_link' | t %}
+
+<div class="layout--login">
+
+  {% if customer %}
+    <a href="{{ routes.account_url }}">
+      {{ account_t }}
+    </a>
+  {% else %}
+    {% assign login_link = account_t | customer_login_link %}
+    {{ login_link }}
+  {% endif %}
+
+</div>

@@ -1,0 +1,183 @@
+<!doctype html>
+<!--[if IE 9]> <html class="ie9 no-js" lang="{{ request.locale.iso_code }}"> <![endif]-->
+<!--[if (gt IE 9)|!(IE)]><!-->
+  <html class="no-js" lang="{{ request.locale.iso_code }}">
+<!--<![endif]-->
+
+  <head>
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-KFDCT6ELVF"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+
+      gtag('config', 'G-KFDCT6ELVF');
+    </script>
+    
+    <!-- Emerge Theme - Version 3.4.1 by Troop Themes - https://troopthemes.com/ -->
+
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    
+    <!-- facebook domain verification -->
+    <meta name="facebook-domain-verification" content="6egujcquzewgjq2dwyohvag47ewfxv" />
+    
+    <!-- pinterest domain verification -->
+    <meta name="p:domain_verify" content="2becc28bcc2f1745a32ea1cc03269826"/>
+    {% if page_description %}
+      <meta name="description" content="{{ page_description }}">
+    {% endif %}
+
+    {% render 'framework--social-meta-tags' %}
+
+    <link rel="canonical" href="{{ canonical_url }}">
+    <link rel="preconnect" href="https://cdn.shopify.com">
+
+    {% if settings.favicon != nil %}
+      <link rel="shortcut icon" href="{{ settings.favicon | img_url: '32x32' }}" type="image/png">
+    {% endif %}
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ 'apple-touch-icon.png' | asset_url }}">
+	<link rel="icon" type="image/png" sizes="16x16" href="{{ 'favicon-16x16.png' | asset_url }}">
+    <link rel="manifest" href="{{ 'site.webmanifest' | asset_url }}">
+
+    {% if template == 'index' %}
+      <title>{{ page_title }}</title>
+    {% elsif template == 'password' %}
+      <title>{{ shop.name }}</title>
+    {% else %}
+      <title>{{ page_title }} | {{ shop.name }}</title>
+    {% endif %}
+
+    {{ content_for_header }}
+
+    {% render 'framework--css-variables' %}
+    {% render 'partial--css-variables' %}
+
+    {{ "theme.css" | asset_url | stylesheet_tag }}
+    {{ 'theme--customizations.css' | asset_url | stylesheet_tag }}
+
+    {% render 'partial--js-variables' %}
+
+    {{ 'lazysizes.min.js' | asset_url | script_tag }}
+
+    {% if template contains 'customers' %}
+      {{ 'shopify_common.js' | shopify_asset_url | script_tag }}
+      {{ 'customer_area.js'  | shopify_asset_url | script_tag }}
+    {% endif %}
+
+    {{ "theme.min.js" | asset_url | script_tag }}
+
+  {% include 'booster-common' %}
+    
+  <script type="text/javascript">
+  !function(e){if(!window.pintrk){window.pintrk=function()
+  {window.pintrk.queue.push(Array.prototype.slice.call(arguments))};var
+  n=window.pintrk;n.queue=[],n.version="3.0";var
+  t=document.createElement("script");t.async=!0,t.src=e;var
+  r=document.getElementsByTagName("script")[0];r.parentNode.insertBefore(t,r)}}
+  ("https://s.pinimg.com/ct/core.js"); 
+
+  pintrk('load','2613027704731', { em: '{{ customer.email }}', });
+  pintrk('page');
+  </script> 
+  <noscript> 
+  <img height="1" width="1" style="display:none;" alt=""
+  src="https://ct.pinterest.com/v3/?tid=2613027704731&noscript=1" /> 
+  </noscript>
+    <!-- Facebook Pixel Code -->
+<script>
+!function(f,b,e,v,n,t,s)
+{if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+n.queue=[];t=b.createElement(e);t.async=!0;
+t.src=v;s=b.getElementsByTagName(e)[0];
+s.parentNode.insertBefore(t,s)}(window, document,'script',
+'https://connect.facebook.net/en_US/fbevents.js');
+fbq('init', '415355539635058');
+fbq('track', 'PageView');
+</script>
+<noscript><img height="1" width="1" style="display:none"
+src="https://www.facebook.com/tr?id=415355539635058&ev=PageView&noscript=1"
+/></noscript>
+<!-- End Facebook Pixel Code -->
+<!--Gem_Page_Header_Script-->
+{% include 'gem-app-header-scripts' %}
+<!--End_Gem_Page_Header_Script-->
+	  
+<!-- RYVIU APP :: Settings global -->	
+    <script>
+        var ryviu_global_settings = {{shop.metafields.ryviu.user_settings }};
+    </script>
+<!-- RYVIU APP -->
+</head>
+
+  <body
+    class="{% render 'partial--body-classes' %}"
+    data-theme-id="833"
+    data-theme-name="Emerge"
+    data-theme-version="3.4.1"
+    {% if template contains 'customers' %}
+      data-account-template="true"
+    {% endif %}
+  >
+    <div
+      class="off-canvas--viewport"
+      data-js-class="OffCanvas"
+      data-off-canvas--state="closed"
+    >
+      <div class="off-canvas--overlay"></div>
+      <div class="off-canvas--close">
+        {% render 'framework--icons', icon: 'cross' %}
+      </div>
+
+      <div class="off-canvas--left-sidebar">
+        {% render 'layout--mobile-nav' %}
+      </div>
+
+      <div class="off-canvas--main-content">
+        <!-- START TIMER CODE - remove after black friday pro-mo-->
+        <div id="ctb_placeholder"></div>
+        <!-- END TIMER CODE - remove after black friday pro-mo-->
+        
+        <div class="fullscreen-container">
+          {% if template contains 'index' %}
+            {% section 'index--banner' %}
+          {% endif %}
+          {% unless template == 'password' %}
+            {% section 'announcement' %}
+            {% section 'header' %}
+          {% endunless %}
+        </div>
+
+        <main class="layout--main-content">
+          {{ content_for_layout }}
+        </main>
+
+        {% section 'framework--footer' %}
+
+        {% if settings.popup--enabled %}
+          {% render 'partial--popup' %}
+        {% endif %}
+
+        {% render 'partial--feedback-bar' %}
+
+      </div>
+
+      <div class="off-canvas--right-sidebar">
+        {% if settings.cart--type == 'drawer' or settings.product--show-quick-add-buttons %}
+          {% render 'framework--cart', view: 'mobile' %}
+        {% endif %}
+      </div>
+    </div>
+
+    {% render 'framework--search', view: 'modal' %}
+
+    {% render 'framework--modal' %}
+
+  {% render 'spurit_sct_theme_snippet' %}
+{% include 'booster-message' %}
+</body>
+</html>

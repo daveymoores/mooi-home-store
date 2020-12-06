@@ -1,0 +1,272 @@
+{% unless position %}
+  {% assign position = partial--social-media %}
+{% endunless %}
+
+{% assign facebook_url = settings.social--facebook--url | escape %}
+{% assign twitter_url = settings.social--twitter--url | escape %}
+{% assign pinterest_url = settings.social--pinterest--url | escape %}
+{% assign instagram_url = settings.social--instagram--url | escape %}
+{% assign vimeo_url = settings.social--vimeo--url | escape %}
+{% assign youtube_url = settings.social--youtube--url | escape %}
+
+<div class="partial--social-media position--{{ position }}">
+
+  {% if position == 'header' or position == 'footer' %}
+
+    <div class="fw--blocks list">
+      {% if facebook_url.size > 0 %}
+        <a
+          class="item"
+          href="{{ facebook_url }}"
+          title="Facebook"
+          aria-hidden="true"
+          target="_blank"
+        >
+          {% render 'framework--icons', icon: 'facebook' %}
+        </a>
+      {% endif %}
+
+      {% if instagram_url.size > 0 %}
+        <a
+          class="item"
+          href="{{ instagram_url }}"
+          title="Instagram"
+          aria-hidden="true"
+          target="_blank"
+        >
+          {% render 'framework--icons', icon: 'instagram' %}
+        </a>
+      {% endif %}
+
+      {% if twitter_url.size > 0 %}
+        <a
+          class="item"
+          href="{{ twitter_url }}"
+          title="Twitter"
+          aria-hidden="true"
+          target="_blank"
+        >
+          {% render 'framework--icons', icon: 'twitter' %}
+        </a>
+      {% endif %}
+
+      {% if vimeo_url.size > 0 %}
+        <a
+          class="item"
+          href="{{ vimeo_url }}"
+          title="Vimeo"
+          aria-hidden="true"
+          target="_blank"
+        >
+          {% render 'framework--icons', icon: 'vimeo' %}
+        </a>
+      {% endif %}
+
+      {% if pinterest_url.size > 0 %}
+        <a
+          class="item"
+          href="{{ pinterest_url }}"
+          title="Pinterest"
+          aria-hidden="true"
+          target="_blank"
+        >
+          {% render 'framework--icons', icon: 'pinterest' %}
+        </a>
+      {% endif %}
+
+      {% if youtube_url.size > 0 %}
+        <a
+          class="item"
+          href="{{ youtube_url }}"
+          title="Youtube"
+          aria-hidden="true"
+          target="_blank"
+        >
+          {% render 'framework--icons', icon: 'youtube' %}
+        </a>
+      {% endif %}
+
+    </div>
+
+  {% elsif position == 'modal' %}
+    <div class="fw--blocks list spacing--3">
+      {% if facebook_url.size > 0 %}
+        <a
+          class="item"
+          href="{{ facebook_url }}"
+          title="Facebook"
+          aria-hidden="true"
+          target="_blank"
+        >
+          {% render 'framework--icons', icon: 'facebook' %}
+        </a>
+      {% endif %}
+
+      {% if instagram_url.size > 0 %}
+        <a
+          class="item"
+          href="{{ instagram_url }}"
+          title="Instagram"
+          aria-hidden="true"
+          target="_blank"
+        >
+          {% render 'framework--icons', icon: 'instagram' %}
+        </a>
+      {% endif %}
+
+      {% if twitter_url.size > 0 %}
+        <a
+          class="item"
+          href="{{ twitter_url }}"
+          title="Twitter"
+          aria-hidden="true"
+          target="_blank"
+        >
+          {% render 'framework--icons', icon: 'twitter' %}
+        </a>
+      {% endif %}
+
+      {% if vimeo_url.size > 0 %}
+        <a
+          class="item"
+          href="{{ vimeo_url }}"
+          title="Vimeo"
+          aria-hidden="true"
+          target="_blank"
+        >
+          {% render 'framework--icons', icon: 'vimeo' %}
+        </a>
+      {% endif %}
+
+      {% if pinterest_url.size > 0 %}
+        <a
+          class="item"
+          href="{{ pinterest_url }}"
+          title="Pinterest"
+          aria-hidden="true"
+          target="_blank"
+        >
+          {% render 'framework--icons', icon: 'pinterest' %}
+        </a>
+      {% endif %}
+
+      {% if youtube_url.size > 0 %}
+        <a
+          class="item"
+          href="{{ youtube_url }}"
+          title="Youtube"
+          aria-hidden="true"
+          target="_blank"
+        >
+          {% render 'framework--icons', icon: 'youtube' %}
+        </a>
+      {% endif %}
+
+    </div>
+
+  {% elsif position == 'product' %}
+    {% capture shareurl %}{{ shop.url }}{{ product.url }}{% endcapture %}
+
+    <div class="share-buttons-list fw--blocks spacing--3">
+      <div class="social--share-title font--accent">
+        {{ 'general.social.product_title' | t }}
+      </div>
+
+      <div class="social--share-item">
+        <a
+          class="social--share-link"
+          href="//www.facebook.com/sharer.php?u={{ shareurl }}&t={{ product.title }}"
+          aria-label="{{ 'general.social.facebook.share' | t }}"
+        >
+          {% render 'framework--icons', icon: 'facebook' %}
+        </a>
+      </div>
+
+      <div class="social--share-item">
+        <a
+          class="social--share-link"
+          href="//twitter.com/intent/tweet?text=Check%20out%20this%20{% if template contains 'article' or template contains 'blog' %}blog%20post{% elsif template contains 'product' %}product{% endif %}:+{{ shareurl }}"
+          aria-label="{{ 'general.social.twitter.share' | t }}"
+        >
+          {% render 'framework--icons', icon: 'twitter' %}
+        </a>
+      </div>
+
+      <div class="social--share-item">
+        <a
+          class="social--share-link"
+          href="//pinterest.com/pin/create/button/?url={{ shareurl }}&media={{ product.featured_media | img_url: '1024x1024' }}&description={{ product.title | strip_html | escape | replace: ' ', '%20' }}" count-layout="none"
+          aria-label="{{ 'general.social.pinterest.share' | t }}"
+        >
+          {% render 'framework--icons', icon: 'pinterest' %}
+        </a>
+      </div>
+
+    </div>
+
+  {% elsif position == 'blog' %}
+    {% capture shareurl %}{{ shop.url }}{{ article.url }}{% endcapture %}
+    <div class="share-buttons-list fw--blocks">
+
+      {% if settings.social--share-facebook %}
+        <div class="item">
+          <a
+            class="share--link"
+            href="//www.facebook.com/sharer.php?u={{ shareurl }}&t={{ article.title }}"
+          >
+            {% render 'framework--icons', icon: 'facebook' %}
+          </a>
+        </div>
+      {% endif %}
+
+      {% if settings.social--share-twitter %}
+        <div class="item">
+          <a
+            class="share--link"
+            href="//twitter.com/intent/tweet?text=Check%20out%20this%20{% if template contains 'article' or template contains 'blog' %}blog%20post{% elsif template contains 'product' %}product{% endif %}:+{{ shareurl }}"
+          >
+            {% render 'framework--icons', icon: 'twitter' %}
+          </a>
+        </div>
+      {% endif %}
+
+      {% if settings.social--share-pinterest %}
+        {% if article.image %}
+          <div class="item">
+            <a
+              class="share--link pinterest--link"
+              href="https://pinterest.com/pin/create/button/?url={{ shareurl }}&media={{ article.image | img_url: '2000x' }}&description={{ article.title | strip_html | escape | replace: ' ', '%20' }}"
+            >
+              {% render 'framework--icons', icon: 'pinterest' %}
+            </a>
+          </div>
+        {% endif %}
+      {% endif %}
+
+      {% if settings.social--share-email %}
+        <div class="item">
+          <a
+            class="share--link"
+            href="mailto:?Subject={{ article.title | url_escape }}&body={{ shop.url | url_escape }}{{ article.url | url_escape }}"
+          >
+            {% render 'framework--icons', icon: 'mail' %}
+          </a>
+        </div>
+      {% endif %}
+
+      {% comment %}
+
+      {% if settings.social--share-link %}
+      <div class="item copy-link">
+        <a class="share--link" href="{{ routes.root_url }}">
+          {% render 'framework--icons', icon: 'link' %}
+        </a>
+        <textarea rows="3">{{ shop.url }}{{ article.url }}</textarea>
+      {% endif %}
+      </div>
+
+      {% endcomment %}
+    </div>
+  {% endif %}
+
+</div>

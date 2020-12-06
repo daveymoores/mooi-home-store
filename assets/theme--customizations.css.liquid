@@ -1,0 +1,47 @@
+{% comment %}
+  Here's an example of a customization
+  You can paste this at the bottom of the page to see how it works
+
+  /* Author - Date - Customization */
+  /* E.g. Troop Themes - 12th November .... - Changed paragraph colors */
+  @media only screen and (max-width: 767px) { /* mobile */
+    body {
+      color: blue;
+    }
+  }
+
+  @media only screen and (min-width: 768px) { /* desktop */
+    body {
+      color: green;
+    }
+  }
+{% endcomment %}
+
+/* Add your theme customizations below */
+
+#insta-feed, .instafeed-shopify {
+	margin-top: 0px!important;
+}
+
+
+/* timer styles for black friday */
+#epb_background {
+	top: 0;
+    border-top: 8px solid var(--bdr-color--page);
+    left: 8px!important;
+    width: calc(100% - 16px)!important;
+}
+
+@media (min-width: 768px) {
+	#epb_background {
+      border-top-width: 12px;
+      left: 12px!important;
+      width: calc(100% - 24px)!important;
+	}
+}
+
+.announcement--root {
+	background: var(--bdr-color--page);
+    color: var(--bg-color--announcement);
+}
+/* end timer styles for black friday */
