@@ -44,4 +44,34 @@
 	background: var(--bdr-color--page);
     color: var(--bg-color--announcement);
 }
+
+.announcement--wrapper {
+    padding: 4px 16px 8px;
+}
+
+@media (min-width: 768px) {
+    .announcement--wrapper {
+        padding: 8px 16px 12px;
+    }
+}
 /* end timer styles for black friday */
+
+/** payment icons **/
+.mooi--payment-icons {
+    display: flex;
+    justify-content: center;
+    padding: 8px 0px;
+}
+
+.mooi--payment-icons .payment-icons--list {
+    display: flex;
+    justify-content: center;
+}
+
+.mooi--payment-icons .payment-icons--item:first-of-type {
+    padding-left: 0;
+}
+
+.mooi--payment-icons .payment-icons--item:last-of-type {
+    padding-right: 0;
+}
