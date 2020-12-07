@@ -45,11 +45,19 @@
     color: var(--bg-color--announcement);
 }
 
+.template--index .announcement--wrapper {
+    padding: 8px 16px;
+}
+
 .announcement--wrapper {
     padding: 4px 16px 8px;
 }
 
 @media (min-width: 768px) {
+    .template--index .announcement--wrapper {
+        padding: 12px 16px;
+    }
+
     .announcement--wrapper {
         padding: 8px 16px 12px;
     }
@@ -75,3 +83,75 @@
 .mooi--payment-icons .payment-icons--item:last-of-type {
     padding-right: 0;
 }
+/** end payment icons **/
+
+/** variant button styling **/
+.product-page--variants .radios--input[type='radio']:checked + .radios--value-button {
+    border-color: var(--bdr-color--page);
+    background-color: #fff2f1;
+}
+
+/** end variant button styling **/
+
+/** product page tabs **/
+/*
+ CSS for the main interaction
+*/
+.tabset > input[type="radio"] {
+    position: absolute;
+    left: -200vw;
+}
+
+.tabset .tab-panel {
+    display: none;
+}
+
+.tabset > input:first-child:checked ~ .tab-panels > .tab-panel:first-child,
+.tabset > input:nth-child(3):checked ~ .tab-panels > .tab-panel:nth-child(2),
+.tabset > input:nth-child(5):checked ~ .tab-panels > .tab-panel:nth-child(3),
+.tabset > input:nth-child(7):checked ~ .tab-panels > .tab-panel:nth-child(4),
+.tabset > input:nth-child(9):checked ~ .tab-panels > .tab-panel:nth-child(5),
+.tabset > input:nth-child(11):checked ~ .tab-panels > .tab-panel:nth-child(6) {
+    display: block;
+}
+
+/*
+ Styling
+*/
+
+.tabset > label {
+    position: relative;
+    display: inline-block;
+    padding: 15px 15px;
+    border: 1px solid transparent;
+    border-bottom: 0;
+    cursor: pointer;
+    font-weight: 600;
+}
+.tabset > label:hover,
+.tabset > input:focus + label {
+    color: var(--color--body--light);
+}
+
+.tabset > label:hover::after,
+.tabset > input:focus + label::after,
+.tabset > input:checked + label::after {
+    background: #06c;
+}
+
+.tabset > input:checked + label::after {
+    content: "";
+    width: 100%;
+    height: 4px;
+    border-radius: 3px;
+    position: absolute;
+    bottom: -2px;
+    left: 0;
+    background-color: #000;
+}
+
+.tab-panel {
+    padding: 30px 0;
+    border-top: 1px solid #ccc;
+}
+/** end product p[age tabs **/

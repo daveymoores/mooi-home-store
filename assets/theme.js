@@ -5510,6 +5510,8 @@ function(e,t){"function"==typeof define&&define.amd?define("jquery-bridget/jquer
       }, {
         duration: 400
       });
+      // trigger tab after expand
+      document.getElementById('tab1').checked = true;
       return _this.info_box.find('.product-page--description').css({
         display: 'block',
         opacity: 0
@@ -5531,7 +5533,8 @@ function(e,t){"function"==typeof define&&define.amd?define("jquery-bridget/jquer
           width: _this.expanded_width,
           position: 'fixed'
         }).attr('data-show-description', 'true').appendTo(_this.container);
-        _this.expanded_height = info_box_clone.outerHeight();
+        // TODO - remove 100 when I can dynamically set height
+        _this.expanded_height = info_box_clone.outerHeight() + 100;
         ratio = _this.expanded_height / _this.expanded_width;
         if (ratio < .65) {
           _this.expanded_width = _this.expanded_height * 1.5;

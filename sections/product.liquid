@@ -32,7 +32,7 @@
     }
     </script>
 
-
+{% assign policy = shop.shipping_policy %}
 {% assign current_variant = product.selected_or_first_available_variant %}
 {% assign featured_media = current_variant.featured_media | default: product.featured_media %}
 {% assign description = product.description | strip_html %}
@@ -414,8 +414,6 @@
                     {% endfor %}
                   </select>
 
-                  {% comment %} NOTE: uncomment below to add quantity field {% endcomment %}
-                  {% comment %}
                   <div class="product-page--quantity">
                     <label for="product-quantity">{{ 'products.quantity' | t }}</label>
                     <input
@@ -427,7 +425,6 @@
                       style="width: 60px"
                     />
                   </div>
-                  {% endcomment %}
 
                 </div>
 
@@ -500,7 +497,26 @@
           </div>
 
           <div class="product-page--description font--paragraph rte-content">
-            {{ product.description }}
+            <div class="mooi--shipping-description-tabs">
+              <div class="tabset">
+                <!-- Tab 1 -->
+                <input type="radio" name="tabset" id="tab1" aria-controls="description">
+                <label for="tab1">Description</label>
+                <!-- Tab 2 -->
+                <input type="radio" name="tabset" id="tab2" aria-controls="shipping">
+                <label for="tab2">Free Shipping</label>
+
+                <div class="tab-panels">
+                  <section id="description" class="tab-panel">
+                    {{ product.description }}
+                  </section>
+                  <section id="shipping" class="tab-panel">
+                    {{ policy.body }}
+                  </section>
+                </div>
+
+              </div>
+            </div>
           </div>
 
           {% if product.media.size > 1 %}
@@ -557,6 +573,11 @@
 </div>
 
 <script>
+
+  (function() {
+    document.getElementById('tab1').checked = true;
+  })();
+
   theme.product = {{ product | json }};
 
   {% unless product.has_only_default_variant %}
